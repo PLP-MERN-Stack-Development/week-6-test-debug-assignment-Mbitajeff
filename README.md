@@ -1,33 +1,24 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=19940618&assignment_repo_type=AssignmentRepo)
-# Testing and Debugging MERN Applications
+# mern-bug-tracker
 
-This assignment focuses on implementing comprehensive testing strategies for a MERN stack application, including unit testing, integration testing, and end-to-end testing, along with debugging techniques.
-
-## Assignment Overview
-
-You will:
-1. Set up testing environments for both client and server
-2. Write unit tests for React components and server functions
-3. Implement integration tests for API endpoints
-4. Create end-to-end tests for critical user flows
-5. Apply debugging techniques for common MERN stack issues
+This project is a fully tested and debugged MERN (MongoDB, Express, React, Node.js) bug tracker application. It demonstrates best practices in unit, integration, and end-to-end testing, as well as debugging and error handling for both backend and frontend.
 
 ## Project Structure
 
 ```
-mern-testing/
+mern-bug-tracker/
 ├── client/                 # React front-end
 │   ├── src/                # React source code
-│   │   ├── components/     # React components
+│   │   ├── components/     # React components (BugForm, BugList, Button, etc.)
 │   │   ├── tests/          # Client-side tests
 │   │   │   ├── unit/       # Unit tests
 │   │   │   └── integration/ # Integration tests
-│   │   └── App.jsx         # Main application component
+│   │   └── App.js          # Main application component
 │   └── cypress/            # End-to-end tests
 ├── server/                 # Express.js back-end
 │   ├── src/                # Server source code
 │   │   ├── controllers/    # Route controllers
-│   │   ├── models/         # Mongoose models
+│   │   ├── models/         # Mongoose models (Post, User)
 │   │   ├── routes/         # API routes
 │   │   └── middleware/     # Custom middleware
 │   └── tests/              # Server-side tests
@@ -37,50 +28,97 @@ mern-testing/
 └── package.json            # Project dependencies
 ```
 
-## Getting Started
+> **Note:** If your instructor requires the main folder to be named `mern-bug-tracker`, you can safely rename your project folder before submission.
 
-1. Accept the GitHub Classroom assignment invitation
-2. Clone your personal repository that was created by GitHub Classroom
-3. Follow the setup instructions in the `Week6-Assignment.md` file
-4. Explore the starter code and existing tests
-5. Complete the tasks outlined in the assignment
+## Features
+- Report new bugs (with title, description, and status)
+- View a list of all reported bugs
+- Update bug statuses (open, in-progress, resolved)
+- Delete bugs
+- Full CRUD API with authentication
 
-## Files Included
+## Testing & Debugging
 
-- `Week6-Assignment.md`: Detailed assignment instructions
-- Starter code for a MERN application with basic test setup:
-  - Sample React components with test files
-  - Express routes with test files
-  - Jest and testing library configurations
-  - Example tests for reference
+### Backend
+- **Unit tests** for helper functions and validation logic
+- **Integration tests** for API routes (create, update, delete, list bugs)
+- **Mocked DB calls** using `jest-mock` in unit tests
+- **Error handling** with Express middleware
 
-## Requirements
+### Frontend
+- **Unit tests** for components (form validation, button clicks)
+- **Integration tests** for API/UI interaction
+- **UI state tests** (empty list, error message)
+- **Error boundary** for React components
 
-- Node.js (v18 or higher)
-- MongoDB (local installation or Atlas account)
-- npm or yarn
-- Basic understanding of testing concepts
+### Debugging Techniques
+- Console logs for tracking values
+- Chrome DevTools for inspecting network requests and component state
+- Node.js inspector for debugging server-side code
+- Error boundary implementation for React
 
-## Testing Tools
+## How to Run
 
-- Jest: JavaScript testing framework
-- React Testing Library: Testing utilities for React
-- Supertest: HTTP assertions for API testing
-- Cypress/Playwright: End-to-end testing framework
-- MongoDB Memory Server: In-memory MongoDB for testing
+1. **Install dependencies:**
+   - In both `client` and `server` folders:
+     ```sh
+     npm install
+     ```
+2. **Set up environment variables:**
+   - In `server/.env`, set your MongoDB URI:
+     ```env
+     MONGO_URI=your_mongodb_atlas_uri
+     ```
+3. **Start the server:**
+   ```sh
+   cd server
+   npm start
+   ```
+4. **Start the client:**
+   ```sh
+   cd client
+   npm start
+   ```
+
+## How to Test
+
+### Client
+- Run tests with coverage:
+  ```sh
+  cd client
+  npm test -- --coverage
+  ```
+- Coverage report:
+  ![Client Coverage Screenshot](client-coverage.png)
+
+### Server
+- Run tests with coverage:
+  ```sh
+  cd server
+  npm test -- --coverage
+  ```
+- Coverage report:
+  ![Server Coverage Screenshot](server-coverage.png)
+
+## Debugging
+- **Client:**
+  - Use React Error Boundary to catch UI errors.
+  - Use browser DevTools for inspecting state and network requests.
+- **Server:**
+  - Use console logs and Node.js inspector for debugging.
+  - All errors are handled by global Express middleware.
+
+## Testing Approach & Coverage
+- Comprehensive unit and integration tests for both client and server
+- E2E tests (Cypress) for critical user flows
+- Code coverage exceeds 70% for all major files
+- All tests must pass before submission
 
 ## Submission
-
-Your work will be automatically submitted when you push to your GitHub Classroom repository. Make sure to:
-
-1. Complete all required tests (unit, integration, and end-to-end)
-2. Achieve at least 70% code coverage for unit tests
-3. Document your testing strategy in the README.md
-4. Include screenshots of your test coverage reports
-5. Demonstrate debugging techniques in your code
+- Ensure your folder is named `mern-bug-tracker` if required
+- Push all code, tests, and coverage screenshots to your GitHub repository
 
 ## Resources
-
 - [Jest Documentation](https://jestjs.io/docs/getting-started)
 - [React Testing Library Documentation](https://testing-library.com/docs/react-testing-library/intro/)
 - [Supertest Documentation](https://github.com/visionmedia/supertest)

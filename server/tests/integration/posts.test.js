@@ -1,23 +1,25 @@
 // posts.test.js - Integration tests for posts API endpoints
 
-const request = require('supertest');
+require('dotenv').config(); // Loads .env by default
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const app = require('../../src/app');
 const Post = require('../../src/models/Post');
 const User = require('../../src/models/User');
 const { generateToken } = require('../../src/utils/auth');
+const request = require('supertest');
 
-let mongoServer;
+const MONGO_URI = process.env.MONGO_ATLAS_TEST_URI;
+console.log('MONGO_URI:', MONGO_URI); // Debug log
+
+jest.setTimeout(30000);
+
 let token;
 let userId;
 let postId;
+let anotherUser;
 
-// Setup in-memory MongoDB server before all tests
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri);
+  await mongoose.connect(MONGO_URI);
 
   // Create a test user
   const user = await User.create({
@@ -28,21 +30,27 @@ beforeAll(async () => {
   userId = user._id;
   token = generateToken(user);
 
+  // Create a second user for 'not the author' tests
+  anotherUser = await User.create({
+    username: 'otheruser',
+    email: 'other@example.com',
+    password: 'password456',
+  });
+
   // Create a test post
   const post = await Post.create({
     title: 'Test Post',
     content: 'This is a test post content',
     author: userId,
-    category: mongoose.Types.ObjectId(),
+    category: new mongoose.Types.ObjectId(),
     slug: 'test-post',
   });
   postId = post._id;
 });
 
-// Clean up after all tests
 afterAll(async () => {
+  await mongoose.connection.dropDatabase();
   await mongoose.disconnect();
-  await mongoServer.stop();
 });
 
 // Clean up database between tests
@@ -62,7 +70,7 @@ describe('POST /api/posts', () => {
     const newPost = {
       title: 'New Test Post',
       content: 'This is a new test post content',
-      category: mongoose.Types.ObjectId().toString(),
+      category: new mongoose.Types.ObjectId().toString(),
     };
 
     const res = await request(app)
@@ -81,7 +89,7 @@ describe('POST /api/posts', () => {
     const newPost = {
       title: 'Unauthorized Post',
       content: 'This should not be created',
-      category: mongoose.Types.ObjectId().toString(),
+      category: new mongoose.Types.ObjectId().toString(),
     };
 
     const res = await request(app)
@@ -95,7 +103,7 @@ describe('POST /api/posts', () => {
     const invalidPost = {
       // Missing title
       content: 'This post is missing a title',
-      category: mongoose.Types.ObjectId().toString(),
+      category: new mongoose.Types.ObjectId().toString(),
     };
 
     const res = await request(app)
@@ -118,7 +126,7 @@ describe('GET /api/posts', () => {
   });
 
   it('should filter posts by category', async () => {
-    const categoryId = mongoose.Types.ObjectId().toString();
+    const categoryId = new mongoose.Types.ObjectId().toString();
     
     // Create a post with specific category
     await Post.create({
@@ -146,7 +154,7 @@ describe('GET /api/posts', () => {
         title: `Pagination Post ${i}`,
         content: `Content for pagination test ${i}`,
         author: userId,
-        category: mongoose.Types.ObjectId(),
+        category: new mongoose.Types.ObjectId(),
         slug: `pagination-post-${i}`,
       });
     }
@@ -177,7 +185,7 @@ describe('GET /api/posts/:id', () => {
   });
 
   it('should return 404 for non-existent post', async () => {
-    const nonExistentId = mongoose.Types.ObjectId();
+    const nonExistentId = new mongoose.Types.ObjectId();
     const res = await request(app)
       .get(`/api/posts/${nonExistentId}`);
 
@@ -204,7 +212,7 @@ describe('PUT /api/posts/:id', () => {
 
   it('should return 401 if not authenticated', async () => {
     const updates = {
-      title: 'Unauthorized Update',
+      title: 'Should Not Update',
     };
 
     const res = await request(app)
@@ -215,21 +223,13 @@ describe('PUT /api/posts/:id', () => {
   });
 
   it('should return 403 if not the author', async () => {
-    // Create another user
-    const anotherUser = await User.create({
-      username: 'anotheruser',
-      email: 'another@example.com',
-      password: 'password123',
-    });
-    const anotherToken = generateToken(anotherUser);
-
     const updates = {
-      title: 'Forbidden Update',
+      title: 'Should Not Update',
     };
 
     const res = await request(app)
       .put(`/api/posts/${postId}`)
-      .set('Authorization', `Bearer ${anotherToken}`)
+      .set('Authorization', `Bearer ${anotherUser._id}`)
       .send(updates);
 
     expect(res.status).toBe(403);
