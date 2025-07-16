@@ -89,7 +89,7 @@ mern-bug-tracker/
   npm test -- --coverage
   ```
 - Coverage report:
-  ![Client Coverage Screenshot](client-coverage.png)
+ ![Client Coverage](client-coverage.png)
 
 ### Server
 - Run tests with coverage:
@@ -98,7 +98,7 @@ mern-bug-tracker/
   npm test -- --coverage
   ```
 - Coverage report:
-  ![Server Coverage Screenshot](server-coverage.png)
+![Server Coverage](server-coverage.png)
 
 ## Debugging
 - **Client:**
